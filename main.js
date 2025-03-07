@@ -17,7 +17,7 @@
 
     // Những file cần dịch, lưu ý theo mặc định: `index.html` là file luôn luôn sẽ được chỉnh sửa
     const FILES_TO_MODIFY = ["tetrio.js"];
-    const LOCALIZE_URL = "https://raw.githubusercontent.com/user/repo/main/localization.json"; // URL file JSON
+    const LOCALIZE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/data/localization.json"; // URL file JSON
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // 24 giờ
 
     let STORAGE_replacements = GM_getValue("localization", {});
@@ -42,7 +42,6 @@
             }
         });
     }
-
     if (shouldUpdate()) fetchLocalization();
 
     const CUSTOM_ENCODING = [
@@ -59,13 +58,22 @@
         'p', 'q', 'r', 's', 't', 'u', 'ù', 'ú', 'ủ', 'ũ', 'ụ', 'ư', 'ừ', 'ứ', 'ử', 'ữ', 'ự',
         'v', 'x', 'y', 'ỳ', 'ý', 'ỷ', 'ỹ', 'ỵ'
     ];
-
     function encodeText(text) {
         return text.split('').map(char => {
             let index = CUSTOM_ENCODING.indexOf(char);
             return index !== -1 ? String.fromCharCode(0xE000 + index) : char;
         }).join('');
     }
+
+
+    let font = new FontFace('LocalizedFont', `url(https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/font/fontFile.ttf)`);
+    font.load().then((loadedFont) => {
+        document.fonts.add(loadedFont);
+        GM_addStyle(`* { font-family: 'HUN', 'LocalizedFont', sans-serif !important; }`);
+        GM_setValue("fontLoaded", true);
+    }).catch((err) => {
+        console.error("Failed to load custom font:", err);
+    });
 
     function modifyHTML() {
         let observer = new MutationObserver(() => {
