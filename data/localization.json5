@@ -1,0 +1,17 @@
+{
+    "index.html": {
+        "<p>total players</p>": ["", "<p>", "TỔNG SỐ NGƯỜI CHƠI", "</p>"],
+        "<p>games played</p>": ["", "<p>" ,"SỐ VÁN ĐÃ CHƠI", "</p>"],
+        "<p>hours played</p>": ["", "<p>" ,"SỐ GIỜ ĐÃ CHƠI", "</p>"],
+        "welcome back to TETR.IO": "chào mừng bạn trở lại TETR.IO",
+
+        "is this you?": "là bạn phải không?",
+        "LOG OUT": "ĐĂNG XUẤT", "LOG OUT ALL": "ĐĂNG XUẤT RA KHỎI TẤT CẢ THIẾT BỊ",
+        "JOIN": "THAM GIA",
+
+        "puzzle together in this modern yet familiar online stacker. play against friends and foes all over the world, or claim a spot on the leaderboards - the stacker future is yours!": ["cùng nhau xếp gạch trong trò chơi vừa hiện đại vừa thân thuộc này. chơi với bạn bè và đối thủ trên toàn thế giới, hoặc giành một vị trí trên bảng xếp hạng - sự nghiệp xếp gạch tương lai của bạn là đây!", "<span><br><br>", "VIỆT HÓA BỞI SWEETSEA", "</span>"],
+        "JOIN HARD DROP": "THAM GIA MÁY CHỦ HARDDROP"
+    },
+    "tetrio.js": {
+    }
+}

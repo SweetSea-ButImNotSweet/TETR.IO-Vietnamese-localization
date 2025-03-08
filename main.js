@@ -20,17 +20,38 @@
     const FILES_TO_MODIFY = ["tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
 
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // Nên cập nhật lại file sau mỗi 24h
-    const FORCE_UPDATE_IMMEDIATELY  = true; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
+    const FORCE_UPDATE_IMMEDIATELY = true; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
     const SHOW_LOCALIZATION_STORAGE = true;
 
-    const BASE_URL     = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
-    const LOCALIZE_URL = `${BASE_URL}/data/localization.json`; // URL file JSON
+    const BASE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
+    const LOCALIZE_URL = `${BASE_URL}/data/localization.json5`;
 
     let STORAGE_replacements = GM_getValue("localization", {});
     let STORAGE_lastUpdate = GM_getValue("lastUpdate", 0);
 
+    // Thư viện JSON5
+    <script type="module">
+        import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
+    </script>
+
     function shouldUpdate() {
         return FORCE_UPDATE_IMMEDIATELY || Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL;
+    }
+
+    // Dùng để sắp xếp lại dữ liệu từ điển trước khi đem ra dùng
+    function sortTranslationData(data) {
+        for (let [file, translation] of Object.entries(data)) {
+            data[file] = Object.fromEntries(
+                Object.entries(translation).sort(([eng1,], [eng2,]) => {
+                    // Sắp xếp cái từ điển theo độ dài của câu gốc trong tiếng Anh
+                    // Để tránh trường hợp từ dài bị ghi đè bởi từ ngắn
+                    const eng1L = Array.isArray(eng1) ? eng1.join("").length : eng1.length;
+                    const eng2L = Array.isArray(eng2) ? eng2.join("").length : eng2.length;
+                    return eng2L - eng1L;
+                }
+                )
+            )
+        };
     }
 
     function fetchLocalization() {
@@ -39,13 +60,8 @@
             url: LOCALIZE_URL,
             onload: function (response) {
                 try {
-                    STORAGE_replacements = JSON.parse(response.responseText);
-
-                    STORAGE_replacements.sort((English) => {
-                        // Sắp xếp cái từ điển theo độ dài của câu gốc trong tiếng Anh
-                        // Để tránh trường hợp từ dài bị ghi đè bởi từ ngắn
-                        return Array.isArray(English) ? English.join("").length : English.length;
-                    });
+                    STORAGE_replacements = JSON5.parse(response.responseText);
+                    sortTranslationData(STORAGE_replacements);
                     console.log("TETR.IO Việt hóa - Đã lấy từ điển mới và sắp xếp lại:", STORAGE_replacements);
 
                     GM_setValue("localization", STORAGE_replacements);
@@ -61,12 +77,13 @@
         });
     }
 
-    function STORAGE_checkForRecentUpdatesFromOriginalHost(filename, theirdata) {
+    function checkForRecentUpdatesFromOriginalHost(filename, theirdata) {
         let previousFileData = GM_getValue(`previousOriginalData_${filename}`, "");
         if (FORCE_UPDATE_IMMEDIATELY || (filename && STORAGE_replacements[filename] && previousFileData !== theirdata)) {
             console.log(`TETR.IO Việt hóa - Đã cập nhật ${filename} từ máy chủ gốc`);
             GM_setValue(`previousOriginalData_${filename}`, theirdata);
 
+            sortTranslationData(STORAGE_replacements);
             for (const [from, to] of Object.entries(STORAGE_replacements[filename])) {
                 theirdata = theirdata.replaceAll(from, encodeText(to));
             }
@@ -136,7 +153,7 @@
     (function modifyHTML() {
         let observer = new MutationObserver(() => {
             if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
-                let modifiedHTML = STORAGE_checkForRecentUpdatesFromOriginalHost("index.html", document.documentElement.innerHTML);
+                let modifiedHTML = checkForRecentUpdatesFromOriginalHost("index.html", document.documentElement.innerHTML);
                 document.documentElement.innerHTML = modifiedHTML;
                 observer.disconnect();
                 safeToLocalizeString = true;
@@ -151,7 +168,7 @@
             if (safeToLocalizeString && FILES_TO_MODIFY.some(file => args[0].includes(file))) {
                 let response = await originalFetch(...args);
                 let fileName = FILES_TO_MODIFY.find(file => args[0].includes(file));
-                let text = STORAGE_checkForRecentUpdatesFromOriginalHost(fileName, await response.text());
+                let text = checkForRecentUpdatesFromOriginalHost(fileName, await response.text());
                 return new Response(text, { status: response.status, statusText: response.statusText, headers: response.headers });
             }
             return originalFetch(...args);
