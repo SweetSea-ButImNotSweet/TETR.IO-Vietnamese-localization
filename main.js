@@ -6,6 +6,7 @@
 // @author       SweetSea
 // @match        https://tetr.io
 // @downloadURL  https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/main.js
+// @updateURL    https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/main.js
 // @run-at       document-start
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -19,13 +20,14 @@
     const FILES_TO_MODIFY = ["tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
 
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // Nên cập nhật lại file sau mỗi 24h
-    const FORCE_UPDATE_IMMEDIATELY = false; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
+    const FORCE_UPDATE_IMMEDIATELY  = true; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
+    const SHOW_LOCALIZATION_STORAGE = true;
 
-    const BASE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
+    const BASE_URL     = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
     const LOCALIZE_URL = `${BASE_URL}/data/localization.json`; // URL file JSON
 
     let STORAGE_replacements = GM_getValue("localization", {});
-    let STORAGE_lastUpdate   = GM_getValue("lastUpdate", 0);
+    let STORAGE_lastUpdate = GM_getValue("lastUpdate", 0);
 
     function shouldUpdate() {
         return FORCE_UPDATE_IMMEDIATELY || Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL;
@@ -41,12 +43,33 @@
                     GM_setValue("localization", STORAGE_replacements);
                     GM_setValue("lastUpdate", Date.now());
                 } catch (e) {
-                    console.error("Failed to parse localization JSON", e);
+                    console.error("TETR.IO Việt hóa - Có gì đó sai sai với cái file JSON rồi", e);
                 }
+
+                if (SHOW_LOCALIZATION_STORAGE) {
+                    console.log("TETR.IO Việt hóa - Bộ nhớ:")
+                    console.log(GM_getValue("localization", "[BỘ NHỚ TRỐNG]"))
+                };
             }
         });
     }
-    if (shouldUpdate()) fetchLocalization();
+
+    function STORAGE_checkForRecentUpdatesFromOriginalHost(filename, theirdata) {
+        let previousFileData = GM_getValue(`previousOriginalData_${filename}`, "");
+        if (filename && STORAGE_replacements[filename] && previousFileData !== theirdata) {
+            console.log(`TETR.IO Việt hóa - Đã cập nhật ${filename} từ máy chủ gốc`);
+            GM_setValue(`previousOriginalData_${filename}`, theirdata);
+
+            for (const [from, to] of Object.entries(STORAGE_replacements[filename])) {
+                theirdata = theirdata.replaceAll(from, encodeText(to));
+            }
+        }
+        return theirdata;
+    }
+
+    if (shouldUpdate()) {
+        fetchLocalization();
+    }
 
     const CUSTOM_ENCODING = [
         'A', 'À', 'Á', 'Ả', 'Ã', 'Ạ', 'Ă', 'Ằ', 'Ắ', 'Ẳ', 'Ẵ', 'Ặ', 'Â', 'Ầ', 'Ấ', 'Ẩ', 'Ẫ', 'Ậ',
@@ -92,16 +115,15 @@
         });
     })();
 
+    let safeToLocalizeString = false;
     // Hai hàm dưới đây tự động chạy luôn, một cái là sửa `index.html`, còn lại là sửa các file khác theo FILE_TO_MODIFY
     (function modifyHTML() {
         let observer = new MutationObserver(() => {
             if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
-                let modifiedHTML = document.documentElement.innerHTML;
-                for (const [from, to] of Object.entries(STORAGE_replacements["index.html"] || {})) {
-                    modifiedHTML = modifiedHTML.replaceAll(from, encodeText(to));
-                }
+                let modifiedHTML = STORAGE_checkForRecentUpdatesFromOriginalHost("index.html", document.documentElement.innerHTML);
                 document.documentElement.innerHTML = modifiedHTML;
                 observer.disconnect();
+                safeToLocalizeString = true;
             }
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
@@ -110,15 +132,10 @@
     (function interceptRequests() {
         const originalFetch = window.fetch;
         window.fetch = async (...args) => {
-            if (FILES_TO_MODIFY.some(file => args[0].includes(file))) {
+            if (safeToLocalizeString && FILES_TO_MODIFY.some(file => args[0].includes(file))) {
                 let response = await originalFetch(...args);
-                let text = await response.text();
                 let fileName = FILES_TO_MODIFY.find(file => args[0].includes(file));
-                if (fileName && STORAGE_replacements[fileName]) {
-                    for (const [from, to] of Object.entries(STORAGE_replacements[fileName])) {
-                        text = text.replaceAll(from, encodeText(to));
-                    }
-                }
+                let text = STORAGE_checkForRecentUpdatesFromOriginalHost(fileName, await response.text());
                 return new Response(text, { status: response.status, statusText: response.statusText, headers: response.headers });
             }
             return originalFetch(...args);
