@@ -40,6 +40,14 @@
             onload: function (response) {
                 try {
                     STORAGE_replacements = JSON.parse(response.responseText);
+
+                    STORAGE_replacements.sort((English) => {
+                        // Sắp xếp cái từ điển theo độ dài của câu gốc trong tiếng Anh
+                        // Để tránh trường hợp từ dài bị ghi đè bởi từ ngắn
+                        return Array.isArray(English) ? English.join("").length : English.length;
+                    });
+                    console.log("TETR.IO Việt hóa - Đã lấy từ điển mới và sắp xếp lại:", STORAGE_replacements);
+
                     GM_setValue("localization", STORAGE_replacements);
                     GM_setValue("lastUpdate", Date.now());
                 } catch (e) {
@@ -47,8 +55,7 @@
                 }
 
                 if (SHOW_LOCALIZATION_STORAGE) {
-                    console.log("TETR.IO Việt hóa - Bộ nhớ:")
-                    console.log(GM_getValue("localization", "[BỘ NHỚ TRỐNG]"))
+                    console.log("TETR.IO Việt hóa - Bộ nhớ:", GM_getValue("localization", "[TRỐNG]"))
                 };
             }
         });
