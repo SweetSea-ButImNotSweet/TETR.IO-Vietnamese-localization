@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         TETR.IO Việt hóa
 // @namespace
-// @version      1.3
+// @version      1.0
 // @description  TETR.IO Việt Hóa
 // @author       SweetSea
 // @match        https://tetr.io
+// @downloadURL  https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/main.js
 // @run-at       document-start
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -15,16 +16,19 @@
 (function () {
     'use strict';
 
-    // Những file cần dịch, lưu ý theo mặc định: `index.html` là file luôn luôn sẽ được chỉnh sửa
-    const FILES_TO_MODIFY = ["tetrio.js"];
-    const LOCALIZE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/data/localization.json"; // URL file JSON
-    const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // 24 giờ
+    const FILES_TO_MODIFY = ["tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
+
+    const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // Nên cập nhật lại file sau mỗi 24h
+    const FORCE_UPDATE_IMMEDIATELY = false; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
+
+    const BASE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
+    const LOCALIZE_URL = `${BASE_URL}/data/localization.json`; // URL file JSON
 
     let STORAGE_replacements = GM_getValue("localization", {});
     let STORAGE_lastUpdate   = GM_getValue("lastUpdate", 0);
 
     function shouldUpdate() {
-        return Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL;
+        return FORCE_UPDATE_IMMEDIATELY || Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL;
     }
 
     function fetchLocalization() {
@@ -66,16 +70,30 @@
     }
 
 
-    let font = new FontFace('LocalizedFont', `url(https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/font/fontFile.ttf)`);
-    font.load().then((loadedFont) => {
-        document.fonts.add(loadedFont);
-        GM_addStyle(`* { font-family: 'HUN', 'LocalizedFont', sans-serif !important; }`);
-        GM_setValue("fontLoaded", true);
-    }).catch((err) => {
-        console.error("Failed to load custom font:", err);
-    });
+    (function loadFont() {
+        // Nạp font chữ dày trước
+        let font1 = new FontFace('LocalizedFont', `url(${BASE_URL}/font/fontFile.ttf)`);
+        font1.load().then((loadedFont) => {
+            document.fonts.add(loadedFont);
+        }).catch((err) => {
+            console.error("TETR.IO Việt hóa - LỖI tải font chữ đậm:", err);
+            return;
+        });
 
-    function modifyHTML() {
+        // Rồi nạp font chữ mỏng hơn
+        let font2 = new FontFace('LocalizedFontThin', `url(${BASE_URL}/font/fontFile_thin.ttf)`);
+        // Rồi mới load cả hai font và ép CSS
+        font2.load().then((loadedFont) => {
+            document.fonts.add(loadedFont);
+            GM_addStyle(`* { font-family: 'HUN', 'LocalizedFont', 'LocalizedFontThin', sans-serif !important; }`);
+            GM_setValue("fontLoaded", true);
+        }).catch((err) => {
+            console.error("TETR.IO Việt hóa - LỖI tải font chữ mỏng:", err);
+        });
+    })();
+
+    // Hai hàm dưới đây tự động chạy luôn, một cái là sửa `index.html`, còn lại là sửa các file khác theo FILE_TO_MODIFY
+    (function modifyHTML() {
         let observer = new MutationObserver(() => {
             if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
                 let modifiedHTML = document.documentElement.innerHTML;
@@ -87,9 +105,9 @@
             }
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
-    }
+    })();
 
-    function interceptRequests() {
+    (function interceptRequests() {
         const originalFetch = window.fetch;
         window.fetch = async (...args) => {
             if (FILES_TO_MODIFY.some(file => args[0].includes(file))) {
@@ -105,8 +123,5 @@
             }
             return originalFetch(...args);
         };
-    }
-
-    modifyHTML();
-    interceptRequests();
+    })();
 })();
