@@ -56,7 +56,7 @@
 
     function STORAGE_checkForRecentUpdatesFromOriginalHost(filename, theirdata) {
         let previousFileData = GM_getValue(`previousOriginalData_${filename}`, "");
-        if (filename && STORAGE_replacements[filename] && previousFileData !== theirdata) {
+        if (FORCE_UPDATE_IMMEDIATELY || (filename && STORAGE_replacements[filename] && previousFileData !== theirdata)) {
             console.log(`TETR.IO Việt hóa - Đã cập nhật ${filename} từ máy chủ gốc`);
             GM_setValue(`previousOriginalData_${filename}`, theirdata);
 
@@ -86,10 +86,19 @@
         'v', 'x', 'y', 'ỳ', 'ý', 'ỷ', 'ỹ', 'ỵ'
     ];
     function encodeText(text) {
-        return text.split('').map(char => {
-            let index = CUSTOM_ENCODING.indexOf(char);
-            return index !== -1 ? String.fromCharCode(0xE000 + index) : char;
-        }).join('');
+        if (Array.isArray(text)) {
+            return text.map((item, index) => {
+                if (index % 2 === 0 && typeof item === 'string') {
+                    item = encodeText(item);
+                }
+                return item;
+            }).join('');
+        } else if (typeof text === 'string') {
+            return text.split('').map(char => {
+                let index = CUSTOM_ENCODING.indexOf(char);
+                return index !== -1 ? String.fromCharCode(0xE000 + index) : char;
+            }).join('');
+        }
     }
 
 

@@ -8,6 +8,8 @@
         "<p>total players</p>": ["", "<p>", "TỔNG SỐ NGƯỜI CHƠI", "</p>"],
         "<p>games played</p>": ["", "<p>" ,"SỐ VÁN ĐÃ CHƠI", "</p>"],
         "<p>hours played</p>": ["", "<p>" ,"SỐ GIỜ ĐÃ CHƠI", "</p>"]
+
+
     },
     "tetrio.js": {
     }
