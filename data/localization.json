@@ -1,7 +1,13 @@
 {
     "index.html": {
         "welcome back to TETR.IO": "chào mừng bạn trở lại TETR.IO",
-        "is this you?": "là bạn phải không?"
+        "is this you?": "là bạn phải không?",
+        "LOG OUT": "đăng xuất",
+        "JOIN": "đăng nhập",
+
+        "TOTAL PLAYERS": "TỔNG SỐ NGƯỜI CHƠI",
+        "GAMES PLAYED": "SỐ VÁN ĐÃ CHƠI",
+        "HOURS PLAYED": "SỐ GIỜ ĐÃ CHƠI"
     },
     "tetrio.js": {
     }
