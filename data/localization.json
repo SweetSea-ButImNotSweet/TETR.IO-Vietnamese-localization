@@ -5,9 +5,9 @@
         "LOG OUT": "đăng xuất",
         "JOIN": "đăng nhập",
 
-        "TOTAL PLAYERS": "TỔNG SỐ NGƯỜI CHƠI",
-        "GAMES PLAYED": "SỐ VÁN ĐÃ CHƠI",
-        "HOURS PLAYED": "SỐ GIỜ ĐÃ CHƠI"
+        "total players": "TỔNG SỐ NGƯỜI CHƠI",
+        "games played": "SỐ VÁN ĐÃ CHƠI",
+        "hours played": "SỐ GIỜ ĐÃ CHƠI"
     },
     "tetrio.js": {
     }
