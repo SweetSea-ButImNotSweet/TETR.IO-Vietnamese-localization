@@ -12,7 +12,9 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
+// @require      https://unpkg.com/json5@2/dist/index.min.js
 // ==/UserScript==
+
 
 (function () {
     'use strict';
@@ -29,11 +31,6 @@
     let STORAGE_replacements = GM_getValue("localization", {});
     let STORAGE_lastUpdate = GM_getValue("lastUpdate", 0);
 
-    // Thư viện JSON5
-    <script type="module">
-        import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
-    </script>
-
     function shouldUpdate() {
         return FORCE_UPDATE_IMMEDIATELY || Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL;
     }
@@ -45,11 +42,8 @@
                 Object.entries(translation).sort(([eng1,], [eng2,]) => {
                     // Sắp xếp cái từ điển theo độ dài của câu gốc trong tiếng Anh
                     // Để tránh trường hợp từ dài bị ghi đè bởi từ ngắn
-                    const eng1L = Array.isArray(eng1) ? eng1.join("").length : eng1.length;
-                    const eng2L = Array.isArray(eng2) ? eng2.join("").length : eng2.length;
-                    return eng2L - eng1L;
-                }
-                )
+                    return eng2.length - eng1.length;
+                })
             )
         };
     }
@@ -148,7 +142,7 @@
         });
     })();
 
-    let safeToLocalizeString = false;
+    let safeToLocalizeString = false; // Nếu biến này là `false`, thì khả năng cao là Clouldflare đang hiện trang "Checking your browser before accessing tetr.io."
     // Hai hàm dưới đây tự động chạy luôn, một cái là sửa `index.html`, còn lại là sửa các file khác theo FILE_TO_MODIFY
     (function modifyHTML() {
         let observer = new MutationObserver(() => {
