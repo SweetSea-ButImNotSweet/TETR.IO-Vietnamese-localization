@@ -9,15 +9,30 @@
         "LOG OUT": "ĐĂNG XUẤT", "LOG OUT ALL": "ĐĂNG XUẤT RA KHỎI TẤT CẢ THIẾT BỊ",
         "JOIN": "THAM GIA",
 
-        // Menu
+        // Menu chính
         "MULTIPLAYER": "CHƠI TRỰC TUYẾN",
         "SOLO": "CHƠI MỘT MÌNH",
+        // TETRA CHANNEL
         "CONFIG": "CÀI ĐẶT",
         "ABOUT": "GIỚI THIỆU",
 
+        // Menu multiplayer
+        "QUICK PLAY": "CHƠI NGAY",
+        // TETRA LEAGUE
+        "CUSTOM LOBBY": "PHÒNG TỰ DO",
+        "ROOM LISTING": "DANH SÁCH PHÒNG",
+
+        // Menu solo
+        "40 LINES": "40 HÀNG",
+        "ULTRA": "ULTRA",
+        "BLITZ": "3 PHÚT",
+        "CUSTOM": "TỰ DO",
+
+        // Multiplayer
+
         // About
-        "puzzle together in this modern yet familiar online stacker. play against friends and foes all over the world, or claim a spot on the leaderboards - the stacker future is yours!": ["cùng nhau xếp gạch trong trò chơi vừa hiện đại vừa thân thuộc này. chơi với bạn bè và đối thủ trên toàn thế giới, hoặc giành một vị trí trên bảng xếp hạng - sự nghiệp xếp gạch tương lai của bạn là đây!", "<span><br><br>", "VIỆT HÓA BỞI SWEETSEA", "</span>"],
-        "JOIN HARD DROP": "THAM GIA MÁY CHỦ HARD DROP"
+        "puzzle together in this modern yet familiar online stacker. play against friends and foes all over the world, or claim a spot on the leaderboards - the stacker future is yours!": ["cùng nhau xếp gạch trong trò chơi vừa hiện đại vừa thân thuộc này. chơi với bạn bè và đối thủ trên toàn thế giới, hoặc giành một vị trí trên bảng xếp hạng - sự nghiệp xếp gạch tương lai của bạn là đây!", "<span attribute='margin=auto'><br><br>", "VIỆT HÓA BỞI SWEETSEA", "</span>"],
+        "JOIN HARD DROP": "VÀO MÁY CHỦ HARD DROP"
     },
     "tetrio.js": {
     }
