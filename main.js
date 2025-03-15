@@ -11,6 +11,8 @@
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_listValues
 // @grant        GM_xmlhttpRequest
 // @require      https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/lib/json5.js
 // ==/UserScript==
@@ -53,28 +55,31 @@
                 if (this.responseURL) {
                     const [hostDomain, fileParameter] = extractDomainAndPath(this.responseURL);
                     if (hostDomain == "tetr.io") {
+                        console.warn(this.responseType)
                         while (!translationIsReady) {
                             delayForMs(200);
                         }
 
+                        // debugger;
+
                         if (this.status === 200) {
                             if (FILES_TO_MODIFY.includes(fileParameter) && XML_TYPES_ALLOWED_TO_REPLACE.includes(this.responseType)) {
                                 this.responeText = translateFile(fileParameter, this.responseText);
-                                // console.log("[Userscript] Đã áp bản dịch:", this.responeText);
+                                console.log("[Userscript] Đã áp bản dịch:", this.responeText);
                             }
                         }
                     }
 
                     // Vẫn gọi lại hàm gốc, hàm mình chỉ sửa bản dịch khi response báo OK (200)
-                    realOnLoadFunction.call(this);
                 }
+                realOnLoadFunction.call(this);
             }
 
             return realSend.apply(this, args);
         }
     }();
 
-    const FILES_TO_MODIFY = ["tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
+    const FILES_TO_MODIFY = ["js/tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
 
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // Nên cập nhật lại file sau mỗi 24h
     const FORCE_UPDATE_IMMEDIATELY = true; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
@@ -116,7 +121,7 @@
                     GM_setValue("localization", STORAGE_replacements);
                     GM_setValue("lastUpdate", Date.now());
                 } catch (e) {
-                    console.error("TETR.IO Việt hóa - Có gì đó sai sai với cái file JSON rồi", e);
+                    console.error("TETR.IO Việt hóa - Có gì đó sai sai với cái file JSON rồi", e, response.responseText);
                 }
 
                 if (SHOW_LOCALIZATION_STORAGE) {
