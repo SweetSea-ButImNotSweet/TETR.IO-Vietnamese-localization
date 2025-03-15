@@ -12,23 +12,31 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
-// @require      https://unpkg.com/json5@2/dist/index.min.js
+// @require      https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/lib/json5.js
 // ==/UserScript==
 
 
 (function () {
     'use strict';
 
+    const delayForMs = ms => new Promise(res => setTimeout(res, ms));
+    const XML_TYPES_ALLOWED_TO_REPLACE = ["", "text"]
+
     // GHI ĐÈ `XHLHttpRequest` để có thể can thiệp cách tải file và sửa file
     let translationIsReady = false; // bản dịch đã sẵn sàng chưa
-    let recentResolveLocks = [] // Các function resolve cần gọi để mở khóa quá trình loading
+    function extractDomainAndPath(url) {
+        const regex = /https?:\/\/([^\/]+)\/([^?]+)/;
+        const match = url.match(regex);
+
+        if (match) {
+            return [match[1], match[2]];
+        } else {
+            return null;
+        }
+    }
 
     // Ghi đè XHLHttpRequest để thêm cơ chế khóa, để có thời gian kiểm tra, và cập nhật bản dịch mới
-    !function modifyXHLHttpRequest(XHLPrototype) {
-        let realSend = XHLPrototype.send;
-        let realOnLoadFunction = XHLPrototype.onload;
-        // let realOnErrorFunction = xhr.onerror;
-
+    !function modifyXHLHttpRequest() {
         /*
         Nhiều bạn sẽ hỏi là: tại sao tui vừa ghi đè cả `send` và `onLoad`, nhưng lại không đụng chạm gì tới `open`?
         Có 3 lí do chính:
@@ -38,30 +46,33 @@
             - Cuối cùng, `send` mới là hàm quyết định tải dữ liệu về, và hàm này luôn gọi cuối cùng sau khi configure xong,
                 nên tui mới quyết định override `send` để override luôn `onLoad`
         */
-        XHLPrototype.send = function () {
-            XHLPrototype.onload = async function () {
-                if (!translationIsReady) {
-                    new Promise((resolve, reject) => {
-                        recentResolveLocks.push(resolve);
-                    })
-                }
+        let realSend = unsafeWindow.XMLHttpRequest.prototype.send
+        unsafeWindow.XMLHttpRequest.prototype.send = function (...args) {
+            const realOnLoadFunction = this.onload;
+            this.onload = function () {
+                if (this.responseURL) {
+                    const [hostDomain, fileParameter] = extractDomainAndPath(this.responseURL);
+                    if (hostDomain == "tetr.io") {
+                        while (!translationIsReady) {
+                            delayForMs(200);
+                        }
 
-                if (this.status === 200) {
-                    const fileParameter = splitDomainNameFromURL(this.responseURL);
-                    if (FILES_TO_MODIFY.includes(fileParameter)) {
-                        this.responeText = translateFile(fileParameter, this.responseText);
-                        console.log("[Userscript] Đã áp bản dịch:", xhr);
+                        if (this.status === 200) {
+                            if (FILES_TO_MODIFY.includes(fileParameter) && XML_TYPES_ALLOWED_TO_REPLACE.includes(this.responseType)) {
+                                this.responeText = translateFile(fileParameter, this.responseText);
+                                // console.log("[Userscript] Đã áp bản dịch:", this.responeText);
+                            }
+                        }
                     }
+
+                    // Vẫn gọi lại hàm gốc, hàm mình chỉ sửa bản dịch khi response báo OK (200)
+                    realOnLoadFunction.call(this);
                 }
-
-                // Vẫn gọi lại hàm gốc, hàm mình chỉ sửa bản dịch khi response báo OK (200)
-                realOnLoadFunction();
-                return realSend.apply(xhr, arguments);
             }
-        }(unsafeWindow.XMLHttpRequest.prototype);
 
-        return xhr;
-    }
+            return realSend.apply(this, args);
+        }
+    }();
 
     const FILES_TO_MODIFY = ["tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
 
@@ -74,14 +85,6 @@
 
     let STORAGE_replacements = GM_getValue("localization", {});
     let STORAGE_lastUpdate = GM_getValue("lastUpdate", 0);
-
-
-
-    function splitDomainNameFromURL(url) {
-        return url.split("/").map((item, index) => {
-            if (index >= 2) { return item }
-        }).filter(n => n).join("/")
-    }
 
     function shouldUpdate() {
         return FORCE_UPDATE_IMMEDIATELY || Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL;
@@ -218,10 +221,5 @@
             GM_deleteValue(key);
         }
     };
-
-    // Không quên mở khóa cho các hàm `resolve` nữa chứ :')
-    for (let resolve of recentResolveLocks) {
-        resolve();
-    }
     translationIsReady = true;
 })();
