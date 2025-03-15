@@ -34,19 +34,19 @@
         "puzzle together in this modern yet familiar online stacker. play against friends and foes all over the world, or claim a spot on the leaderboards - the stacker future is yours!": ["cùng nhau xếp gạch trong trò chơi vừa hiện đại vừa thân thuộc này. chơi với bạn bè và đối thủ trên toàn thế giới, hoặc giành một vị trí trên bảng xếp hạng - sự nghiệp xếp gạch tương lai của bạn là đây!", "<span attribute='margin=auto'><br><br>", "VIỆT HÓA BỞI SWEETSEA", "</span>"],
         "JOIN HARD DROP": "VÀO MÁY CHỦ HARD DROP",
     },
-    "tetrio.js": {
+    "js/tetrio.js": {
         // QUICK PLAY string
-        '["", "hall of beginnings", "the hotel", "the casino", "the arena", "the museum", "abandoned offices", "the laboratory", "the core", "corruption", "platform of the gods"]':[
+        '["", "HALL OF BEGINNINGS", "THE HOTEL", "THE CASINO", "THE ARENA", "THE MUSEUM", "ABANDONED OFFICES", "THE LABORATORY", "THE CORE", "CORRUPTION", "PLATFORM OF THE GODS"]':[
             '["',
-            "hội trường xuất phát",
-            "quầy sòng bạc",
-            "đấu trường",
-            "bảo tàng",
-            "văn phòng bỏ hoang",
-            "phòng thí nghiệm",
-            "lõi",
-            "sự thối rữa",
-            "tầng thượng của thần thánh",
+            "HỘI TRƯỜNG XUẤT PHÁT",
+            "QUẦY SÒNG BẠC",
+            "ĐẤU TRƯỜNG",
+            "BẢO TÀNG",
+            "VĂN PHÒNG BỎ HOANG",
+            "PHÒNG THÍ NGHIỆM",
+            "LÕI",
+            "SỰ THỐI RỮA",
+            "TẦNG THƯỢNG CỦA THẦN THÁNH",
             '"]'
         ]
     }

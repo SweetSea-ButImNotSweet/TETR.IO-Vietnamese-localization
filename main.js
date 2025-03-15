@@ -19,6 +19,50 @@
 (function () {
     'use strict';
 
+    // GHI ĐÈ `XHLHttpRequest` để có thể can thiệp cách tải file và sửa file
+    let translationIsReady = false; // bản dịch đã sẵn sàng chưa
+    let recentResolveLocks = [] // Các function resolve cần gọi để mở khóa quá trình loading
+
+    // Ghi đè XHLHttpRequest để thêm cơ chế khóa, để có thời gian kiểm tra, và cập nhật bản dịch mới
+    !function modifyXHLHttpRequest(XHLPrototype) {
+        let realSend = XHLPrototype.send;
+        let realOnLoadFunction = XHLPrototype.onload;
+        // let realOnErrorFunction = xhr.onerror;
+
+        /*
+        Nhiều bạn sẽ hỏi là: tại sao tui vừa ghi đè cả `send` và `onLoad`, nhưng lại không đụng chạm gì tới `open`?
+        Có 3 lí do chính:
+            - `open` thật ra chỉ là tạo object XHL, và truyền trước các tham số URL, và các option khác
+            - Nếu ghi đè ngay từ `open`, thì callback `onLoad` của tui sẽ không bao giờ được gọi, bởi vì...
+                callback đó có thể bị ghi đè (meow >_<)
+            - Cuối cùng, `send` mới là hàm quyết định tải dữ liệu về, và hàm này luôn gọi cuối cùng sau khi configure xong,
+                nên tui mới quyết định override `send` để override luôn `onLoad`
+        */
+        XHLPrototype.send = function () {
+            XHLPrototype.onload = async function () {
+                if (!translationIsReady) {
+                    new Promise((resolve, reject) => {
+                        recentResolveLocks.push(resolve);
+                    })
+                }
+
+                if (this.status === 200) {
+                    const fileParameter = splitDomainNameFromURL(this.responseURL);
+                    if (FILES_TO_MODIFY.includes(fileParameter)) {
+                        this.responeText = translateFile(fileParameter, this.responseText);
+                        console.log("[Userscript] Đã áp bản dịch:", xhr);
+                    }
+                }
+
+                // Vẫn gọi lại hàm gốc, hàm mình chỉ sửa bản dịch khi response báo OK (200)
+                realOnLoadFunction();
+                return realSend.apply(xhr, arguments);
+            }
+        }(unsafeWindow.XMLHttpRequest.prototype);
+
+        return xhr;
+    }
+
     const FILES_TO_MODIFY = ["tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
 
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // Nên cập nhật lại file sau mỗi 24h
@@ -30,6 +74,14 @@
 
     let STORAGE_replacements = GM_getValue("localization", {});
     let STORAGE_lastUpdate = GM_getValue("lastUpdate", 0);
+
+
+
+    function splitDomainNameFromURL(url) {
+        return url.split("/").map((item, index) => {
+            if (index >= 2) { return item }
+        }).filter(n => n).join("/")
+    }
 
     function shouldUpdate() {
         return FORCE_UPDATE_IMMEDIATELY || Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL;
@@ -71,8 +123,8 @@
         });
     }
 
-    function checkForRecentUpdatesFromOriginalHost(filename, theirdata) {
-        let previousFileData = GM_getValue(`previousOriginalData_${filename}`, "");
+    function translateFile(filename, theirdata) {
+        let previousFileData = GM_getValue(`previousOriginalData_${filename}`, ""); // Cache trước đó
         if (FORCE_UPDATE_IMMEDIATELY || (filename && STORAGE_replacements[filename] && previousFileData !== theirdata)) {
             console.log(`TETR.IO Việt hóa - Đã cập nhật ${filename} từ máy chủ gốc`);
             GM_setValue(`previousOriginalData_${filename}`, theirdata);
@@ -121,24 +173,14 @@
 
 
     (function loadFont() {
-        // Nạp font chữ dày trước
-        let font1 = new FontFace('LocalizedFont', `url(${BASE_URL}/font/fontFile.ttf)`);
-        font1.load().then((loadedFont) => {
-            document.fonts.add(loadedFont);
-        }).catch((err) => {
-            console.error("TETR.IO Việt hóa - LỖI tải font chữ đậm:", err);
-            return;
-        });
-
-        // Rồi nạp font chữ mỏng hơn
-        let font2 = new FontFace('LocalizedFontThin', `url(${BASE_URL}/font/fontFile_thin.ttf)`);
+        let font = new FontFace('LocalizedFont', `url(${BASE_URL}/font/fontFile.otf)`);
         // Rồi mới load cả hai font và ép CSS
-        font2.load().then((loadedFont) => {
+        font.load().then((loadedFont) => {
             document.fonts.add(loadedFont);
-            GM_addStyle(`* { font-family: 'HUN', 'LocalizedFont', 'LocalizedFontThin', sans-serif !important; }`);
+            GM_addStyle(`* { font-family: 'HUN', 'LocalizedFont', sans-serif !important; }`);
             GM_setValue("fontLoaded", true);
         }).catch((err) => {
-            console.error("TETR.IO Việt hóa - LỖI tải font chữ mỏng:", err);
+            console.error("TETR.IO Việt hóa - LỖI tải font Việt hóa:", err);
         });
     })();
 
@@ -147,7 +189,7 @@
     (function modifyHTML() {
         let observer = new MutationObserver(() => {
             if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
-                let modifiedHTML = checkForRecentUpdatesFromOriginalHost("index.html", document.documentElement.innerHTML);
+                let modifiedHTML = translateFile("index.html", document.documentElement.innerHTML);
                 document.documentElement.innerHTML = modifiedHTML;
                 observer.disconnect();
                 safeToLocalizeString = true;
@@ -156,16 +198,30 @@
         observer.observe(document.documentElement, { childList: true, subtree: true });
     })();
 
-    (function interceptRequests() {
-        const originalFetch = window.fetch;
-        window.fetch = async (...args) => {
-            if (safeToLocalizeString && FILES_TO_MODIFY.some(file => args[0].includes(file))) {
-                let response = await originalFetch(...args);
-                let fileName = FILES_TO_MODIFY.find(file => args[0].includes(file));
-                let text = checkForRecentUpdatesFromOriginalHost(fileName, await response.text());
-                return new Response(text, { status: response.status, statusText: response.statusText, headers: response.headers });
-            }
-            return originalFetch(...args);
-        };
-    })();
+    // (function interceptRequests() {
+    //     const originalFetch = window.fetch;
+    //     window.fetch = async (...args) => {
+    //         if (safeToLocalizeString && FILES_TO_MODIFY.some(file => args[0].includes(file))) {
+    //             let response = await originalFetch(...args);
+    //             let fileName = FILES_TO_MODIFY.find(file => args[0].includes(file));
+    //             let text = translateFile(fileName, await response.text());
+    //             return new Response(text, { status: response.status, statusText: response.statusText, headers: response.headers });
+    //         }
+    //         return originalFetch(...args);
+    //     };
+    // })();
+
+    unsafeWindow.TVH_clearAllData = function () {
+        // Dùng GM_listValue kiểm tra toàn bộ dữ liệu đã lưu, sau đó loop qua từng phần tử để xóa
+        let allKeys = GM_listValues();
+        for (let key of allKeys) {
+            GM_deleteValue(key);
+        }
+    };
+
+    // Không quên mở khóa cho các hàm `resolve` nữa chứ :')
+    for (let resolve of recentResolveLocks) {
+        resolve();
+    }
+    translationIsReady = true;
 })();
