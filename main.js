@@ -177,6 +177,13 @@
             }).join('');
         }
     }
+    // Unused in main script, only used for testing
+    function decodeText(text) {
+        return text.split('').map(char => {
+            let index = char.charCodeAt(0) - 0xE000;
+            return index >= 0 && index < CUSTOM_ENCODING.length ? CUSTOM_ENCODING[index] : char;
+        }).join('');
+    }
 
 
     (function loadFont() {
@@ -218,11 +225,22 @@
     //     };
     // })();
 
-    unsafeWindow.TVH_clearAllData = function () {
-        // Dùng GM_listValue kiểm tra toàn bộ dữ liệu đã lưu, sau đó loop qua từng phần tử để xóa
-        let allKeys = GM_listValues();
-        for (let key of allKeys) {
-            GM_deleteValue(key);
+    unsafeWindow.TETRIOVIETHOA = {
+        clearAllData: function () {
+            // Dùng GM_listValue kiểm tra toàn bộ dữ liệu đã lưu, sau đó loop qua từng phần tử để xóa
+            let allKeys = GM_listValues();
+            for (let key of allKeys) {
+                GM_deleteValue(key);
+            }
+        },
+        forceUpdate: function () {
+            fetchLocalization();
+        },
+        getConvertedText: function (text) {
+            return encodeText(text);
+        },
+        getOriginalText: function (text) {
+            return decodeText(text);
         }
     };
     translationIsReady = true;
