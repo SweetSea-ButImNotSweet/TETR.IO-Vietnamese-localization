@@ -38,6 +38,7 @@
         // QUICK PLAY string
         '["","hall of beginnings","the hotel","the casino","the arena","the museum","abandoned offices","the laboratory","the core","corruption","platform of the gods"]':[
             '[',
+            '""',                           ',',
             '"hội trường xuất phát"',       ',',
             '"quầy sòng bạc"',              ',',
             '"đấu trường"',                 ',',
@@ -51,6 +52,7 @@
         ],
         '["","HALL OF BEGINNINGS","THE HOTEL","THE CASINO","THE ARENA","THE MUSEUM","ABANDONED OFFICES","THE LABORATORY","THE CORE","CORRUPTION","PLATFORM OF THE GODS"]':[
             '[',
+            '""',                           ',',
             '"HỘI TRƯỜNG XUẤT PHÁT"',       ',',
             '"QUẦY SÒNG BẠC"',              ',',
             '"ĐẤU TRƯỜNG"',                 ',',
