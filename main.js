@@ -55,17 +55,16 @@
                 if (this.responseURL) {
                     const [hostDomain, fileParameter] = extractDomainAndPath(this.responseURL);
                     if (hostDomain == "tetr.io") {
-                        console.warn(this.responseType)
                         while (!translationIsReady) {
                             delayForMs(200);
                         }
 
-                        // debugger;
-
                         if (this.status === 200) {
                             if (FILES_TO_MODIFY.includes(fileParameter) && XML_TYPES_ALLOWED_TO_REPLACE.includes(this.responseType)) {
-                                this.responeText = translateFile(fileParameter, this.responseText);
-                                console.log("[Userscript] Đã áp bản dịch:", this.responeText);
+                                let temp = translateFile(fileParameter, this.responseText);
+                                // Little hack: phải bật lại quyền writable thì mới có thể thay content :')
+                                Object.defineProperty(this, "responseText", { writable: true });
+                                this.responseText = temp;
                             }
                         }
                     }
