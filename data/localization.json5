@@ -65,6 +65,6 @@
         ],
 
         // DO NOT CHANGE
-        "new XMLHttpRequest": ["new TETRIOVIETHOA.XMLHttpRequest"],
+        "res/font/hun.fnt": ["https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/font/new_hun.fnt"],
     }
 }
