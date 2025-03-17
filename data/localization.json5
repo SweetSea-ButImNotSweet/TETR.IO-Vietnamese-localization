@@ -64,6 +64,6 @@
         ],
 
         // DO NOT CHANGE
-        "new XMLHttpRequest": ["new window.XMLHttpRequest"],
+        "new XMLHttpRequest;": ["new window.XMLHttpRequest;"],
     }
 }
