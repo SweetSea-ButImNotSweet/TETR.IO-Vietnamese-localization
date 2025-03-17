@@ -151,14 +151,14 @@
             for (const [from, to] of Object.entries(STORAGE_replacements[filename])) {
                 theirdata = theirdata.replaceAll(from, encodeText(to));
             }
-        } else if (FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_FILES[filename]) {
-            GM_xmlhttpRequest({
-                method: "GET",
-                url: FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_FILES[filename],
-                onload: function (response) {
-                    theirdata = response.responseText;
-                }
-            });
+            // } else if (FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_FILES[filename]) {
+            //     GM_xmlhttpRequest({
+            //         method: "GET",
+            //         url: FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_FILES[filename],
+            //         onload: function (response) {
+            //             theirdata = response.responseText;
+            //         }
+            //     });
         }
         return theirdata;
     }
@@ -260,7 +260,8 @@
         },
         getOriginalText: function (text) {
             return decodeText(text);
-        }
+        },
+        XMLHttpRequest: unsafeWindow.XMLHttpRequest,
     };
     translationIsReady = true;
 })();
