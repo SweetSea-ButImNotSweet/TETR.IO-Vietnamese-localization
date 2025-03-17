@@ -38,7 +38,7 @@
     }
 
     // Ghi đè XHLHttpRequest để thêm cơ chế khóa, để có thời gian kiểm tra, và cập nhật bản dịch mới
-    !function modifyXHLHttpRequest() {
+    (function modifyXHLHttpRequest() {
         /*
         Nhiều bạn sẽ hỏi là: tại sao tui vừa ghi đè cả `send` và `onLoad`, nhưng lại không đụng chạm gì tới `open`?
         Có 3 lí do chính:
@@ -49,18 +49,21 @@
                 nên tui mới quyết định override `send` để override luôn `onLoad`
         */
         let realSend = unsafeWindow.XMLHttpRequest.prototype.send
+        let realOpen = unsafeWindow.XMLHttpRequest.prototype.open
+
         unsafeWindow.XMLHttpRequest.prototype.send = function (...args) {
             const realOnLoadFunction = this.onload;
             this.onload = function () {
                 if (this.responseURL) {
                     const [hostDomain, fileParameter] = extractDomainAndPath(this.responseURL);
+                    console.log("TETR.IO Việt hóa - TETR.IO đang tải từ:", this.responseURL);
                     if (hostDomain == "tetr.io") {
                         while (!translationIsReady) {
                             delayForMs(200);
                         }
 
                         if (this.status === 200) {
-                            if (FILES_TO_MODIFY.includes(fileParameter) && XML_TYPES_ALLOWED_TO_REPLACE.includes(this.responseType)) {
+                            if (FLIES_NEED_TO_MODIFY_FROM_LOCALIZATION_DATABASE.includes(fileParameter) && XML_TYPES_ALLOWED_TO_REPLACE.includes(this.responseType)) {
                                 let temp = translateFile(fileParameter, this.responseText);
                                 // Little hack: phải bật lại quyền writable thì mới có thể thay content :')
                                 Object.defineProperty(this, "responseText", { writable: true });
@@ -76,16 +79,25 @@
 
             return realSend.apply(this, args);
         }
-    }();
 
-    const FILES_TO_MODIFY = ["js/tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
+        unsafeWindow.XMLHttpRequest.prototype.open = function (...args) {
+            console.log("TETR.IO Việt hóa - TETR.IO [open] đang tải từ:", args[1]);
+            realOpen.apply(this, args);
+        }
+    })();
+
+    const BASE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
+    const LOCALIZE_URL = `${BASE_URL}/data/localization.json5`;
+
+    const FLIES_NEED_TO_MODIFY_FROM_LOCALIZATION_DATABASE = ["js/tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
+    const FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_FILES = {
+        // "res/font/hun.fnt": BASE_URL + "/font/new_hun.fnt",
+    } // TODO
 
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // Nên cập nhật lại file sau mỗi 24h
     const FORCE_UPDATE_IMMEDIATELY = true; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
     const SHOW_LOCALIZATION_STORAGE = true;
 
-    const BASE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
-    const LOCALIZE_URL = `${BASE_URL}/data/localization.json5`;
 
     let STORAGE_replacements = GM_getValue("localization", {});
     let STORAGE_lastUpdate = GM_getValue("lastUpdate", 0);
@@ -131,15 +143,22 @@
     }
 
     function translateFile(filename, theirdata) {
-        let previousFileData = GM_getValue(`previousOriginalData_${filename}`, ""); // Cache trước đó
-        if (FORCE_UPDATE_IMMEDIATELY || (filename && STORAGE_replacements[filename] && previousFileData !== theirdata)) {
-            console.log(`TETR.IO Việt hóa - Đã cập nhật ${filename} từ máy chủ gốc`);
-            GM_setValue(`previousOriginalData_${filename}`, theirdata);
+        // let previousFileData = GM_getValue(`previousOriginalData_${filename}`, ""); // Cache trước đó
+        // if (FORCE_UPDATE_IMMEDIATELY || (filename && STORAGE_replacements[filename] && previousFileData !== theirdata)) {
+        // }
 
-            sortTranslationData(STORAGE_replacements);
+        if (STORAGE_replacements[filename]) {
             for (const [from, to] of Object.entries(STORAGE_replacements[filename])) {
                 theirdata = theirdata.replaceAll(from, encodeText(to));
             }
+        } else if (FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_FILES[filename]) {
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_FILES[filename],
+                onload: function (response) {
+                    theirdata = response.responseText;
+                }
+            });
         }
         return theirdata;
     }
@@ -165,7 +184,7 @@
     function encodeText(text) {
         if (Array.isArray(text)) {
             return text.map((item, index) => {
-                if (index % 2 === 0 && typeof item === 'string') {
+                if (index % 2 === 1 && typeof item === 'string') {
                     item = encodeText(item);
                 }
                 return item;

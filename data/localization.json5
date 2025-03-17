@@ -1,9 +1,9 @@
 {
     "index.html": {
         // Ô Đăng nhập
-        "<p>total players</p>": ["", "<p>", "TỔNG SỐ NGƯỜI CHƠI", "</p>"],
-        "<p>games played</p>": ["", "<p>" ,"SỐ VÁN ĐÃ CHƠI", "</p>"],
-        "<p>hours played</p>": ["", "<p>" ,"SỐ GIỜ ĐÃ CHƠI", "</p>"],
+        "<p>total players</p>": ["<p>", "TỔNG SỐ NGƯỜI CHƠI", "</p>"],
+        "<p>games played</p>": ["<p>" ,"SỐ VÁN ĐÃ CHƠI", "</p>"],
+        "<p>hours played</p>": ["<p>" ,"SỐ GIỜ ĐÃ CHƠI", "</p>"],
         "welcome back to TETR.IO": "chào mừng bạn trở lại TETR.IO",
         "is this you?": "là bạn phải không?",
         "LOG OUT": "ĐĂNG XUẤT", "LOG OUT ALL": "ĐĂNG XUẤT RA KHỎI TẤT CẢ THIẾT BỊ",
