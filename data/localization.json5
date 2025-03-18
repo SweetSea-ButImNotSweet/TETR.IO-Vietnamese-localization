@@ -37,49 +37,33 @@
     "js/tetrio.js": {
         // QUICK PLAY string
         '["","hall of beginnings","the hotel","the casino","the arena","the museum","abandoned offices","the laboratory","the core","corruption","platform of the gods"]':[
-            '[""',                          ',',
-            '"hội trường xuất phát"',       ',',
-            '"Rất dài và rất xa\\nLà những ngày thương nhớ\\nNơi cháy lên ngọn lửa\\nLà trái tim\\nLà trái tim yêu thương\\n\\nAnh đang mùa hành quân, pháo lăn dài chiến dịch\\nBồi hồi đêm xuất kích chờ nghe tiếng pháo ran\\nNgôi sao như mắt anh trong những đêm không ngủ\\nGiáo án em vẫn mở cho ánh sao bay vào\\n\\nNgày và đêm xa nhau đâu chỉ dài và nhớ\\nThời gian trong cách trở đốt cháy ngời tình yêu\\nPháo anh lên đồi cao nã vào đầu giặc Mỹ\\nBục giảng dưới hầm sâu, em cũng là chiến sĩ\\n\\nCái chết cúi gục đầu\\nCuộc đời xanh tươi trẻ ngày đêm ta bên nhau\\nNhững đêm ngày chiến đấu\\nNgày đêm ta bên nhau những đêm ngày chiến đấu\\nĐêm ngày trong chiến đấu, anh với em sống vẫn gần nhau"',              ',',
-            '"đấu trường"',                 ',',
-            '"bảo tàng"',                   ',',
+            '[',
+            '\"\"',                         ',',
+            '"hành lang khởi đầu"',         ',',
+            '"khách sạn huyền bí"',         ',',
+            '"sòng bạc hoàng gia"',         ',',
+            '"đấu trường chân lí"',         ',',
             '"văn phòng bỏ hoang"',         ',',
             '"phòng thí nghiệm"',           ',',
-            '"lõi"',                        ',',
-            '"sự thối rữa"',                ',',
-            '"tầng thượng của thần thánh"', ',',
+            '"khu bảo tàng"',               ',',
+            '"lõi nhân tạo"',               ',',
+            '"khu mục nát"',                ',',
+            '"nền móng của một vị thần"',   ',',
             ']'
         ],
         '["","HALL OF BEGINNINGS","THE HOTEL","THE CASINO","THE ARENA","THE MUSEUM","ABANDONED OFFICES","THE LABORATORY","THE CORE","CORRUPTION","PLATFORM OF THE GODS"]':[
             '[',
-            '""',                           ',',
-            '"HỘI TRƯỜNG XUẤT PHÁT"',       ',',
-            '"Rất dài và rất xa \\\
-Nơi cháy lên ngọn lửa \\\
-Là trái tim \\\
-Là trái tim yêu thương \\\
- \\\
-Anh đang mùa hành quân, pháo lăn dài chiến dịch \\\
-Bồi hồi đêm xuất kích chờ nghe tiếng pháo ran \\\
-Ngôi sao như mắt anh trong những đêm không ngủ \\\
-Giáo án em vẫn mở cho ánh sao bay vào \\\
- \\\
-Ngày và đêm xa nhau đâu chỉ dài và nhớ \\\
-Thời gian trong cách trở đốt cháy ngời tình yêu \\\
-Pháo anh lên đồi cao nã vào đầu giặc Mỹ \\\
-Bục giảng dưới hầm sâu, em cũng là chiến sĩ \\\
- \\\
-Cái chết cúi gục đầu \\\
-Cuộc đời xanh tươi trẻ ngày đêm ta bên nhau \\\
-Những đêm ngày chiến đấu \\\
-Ngày đêm ta bên nhau những đêm ngày chiến đấu \\\
-Đêm ngày trong chiến đấu, anh với em sống vẫn gần nhau"',              ',',
-            '"ĐẤU TRƯỜNG"',                 ',',
-            '"BẢO TÀNG"',                   ',',
+            '\"\"',                         ',',
+            '"HÀNH LANG KHỞI ĐẦU"',         ',',
+            '"KHÁCH SẠN HUYỀN BÍ"',         ',',
+            '"SÒNG BẠC HOÀNG GIA"',         ',',
+            '"ĐẤU TRƯỜNG CHÂN LÍ"',         ',',
             '"VĂN PHÒNG BỎ HOANG"',         ',',
             '"PHÒNG THÍ NGHIỆM"',           ',',
-            '"LÕI"',                        ',',
-            '"SỰ THỐI RỮA"',                ',',
-            '"TẦNG THƯỢNG CỦA THẦN THÁNH"', ',',
+            '"KHU BẢO TÀNG"',               ',',
+            '"LÕI NHÂN TẠO"',               ',',
+            '"KHU MỤC NÁT"',                ',',
+            '"NỀN MÓNG CỦA MỘT VỊ THẦN"',   ',',
             ']'
         ],
 
