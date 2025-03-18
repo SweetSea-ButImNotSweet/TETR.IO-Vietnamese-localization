@@ -36,6 +36,7 @@
     },
     "js/tetrio.js": {
         // QUICK PLAY string
+        // ----- DỊCH BỞI NKS -----
         '["","hall of beginnings","the hotel","the casino","the arena","the museum","abandoned offices","the laboratory","the core","corruption","platform of the gods"]':[
             '[',
             '\"\"',                         ',',
@@ -43,9 +44,9 @@
             '"khách sạn huyền bí"',         ',',
             '"sòng bạc hoàng gia"',         ',',
             '"đấu trường chân lí"',         ',',
+            '"khu bảo tàng"',               ',',
             '"văn phòng bỏ hoang"',         ',',
             '"phòng thí nghiệm"',           ',',
-            '"khu bảo tàng"',               ',',
             '"lõi nhân tạo"',               ',',
             '"khu mục nát"',                ',',
             '"nền móng của một vị thần"',   ',',
@@ -58,14 +59,15 @@
             '"KHÁCH SẠN HUYỀN BÍ"',         ',',
             '"SÒNG BẠC HOÀNG GIA"',         ',',
             '"ĐẤU TRƯỜNG CHÂN LÍ"',         ',',
+            '"KHU BẢO TÀNG"',               ',',
             '"VĂN PHÒNG BỎ HOANG"',         ',',
             '"PHÒNG THÍ NGHIỆM"',           ',',
-            '"KHU BẢO TÀNG"',               ',',
             '"LÕI NHÂN TẠO"',               ',',
             '"KHU MỤC NÁT"',                ',',
             '"NỀN MÓNG CỦA MỘT VỊ THẦN"',   ',',
             ']'
         ],
+        // ----- DỊCH BỞI NKS -----
 
         // DO NOT CHANGE
         "res/font/hun.fnt": ["https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/font/new_hun.fnt"],
