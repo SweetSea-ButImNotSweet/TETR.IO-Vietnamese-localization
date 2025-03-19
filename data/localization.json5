@@ -36,6 +36,11 @@
     },
     "js/tetrio.js": {
         // QUICK PLAY string
+
+        // Mod
+        // TODO: tetrio.js line 74040; index.html around line 2000
+
+        // 9 tầng trong tháp Zenith
         // ----- DỊCH BỞI NKS -----
         '["","hall of beginnings","the hotel","the casino","the arena","the museum","abandoned offices","the laboratory","the core","corruption","platform of the gods"]':[
             '[',
@@ -44,27 +49,27 @@
             '"khách sạn huyền bí"',         ',',
             '"sòng bạc hoàng gia"',         ',',
             '"đấu trường chân lí"',         ',',
-            '"khu bảo tàng"',               ',',
-            '"văn phòng bỏ hoang"',         ',',
+            '"viện bảo tàng"',              ',',
+            '"khu văn phòng bỏ hoang"',     ',',
             '"phòng thí nghiệm"',           ',',
-            '"lõi nhân tạo"',               ',',
-            '"khu mục nát"',                ',',
-            '"nền móng của một vị thần"',   ',',
+            '"lõi phản ứng"',               ',',
+            '"tàn tích bỏ hoang"',          ',',
+            '"vòm trời thần linh"',         ',',
             ']'
         ],
         '["","HALL OF BEGINNINGS","THE HOTEL","THE CASINO","THE ARENA","THE MUSEUM","ABANDONED OFFICES","THE LABORATORY","THE CORE","CORRUPTION","PLATFORM OF THE GODS"]':[
             '[',
-            '\"\"',                         ',',
+            '\"\"',',',
             '"HÀNH LANG KHỞI ĐẦU"',         ',',
             '"KHÁCH SẠN HUYỀN BÍ"',         ',',
             '"SÒNG BẠC HOÀNG GIA"',         ',',
             '"ĐẤU TRƯỜNG CHÂN LÍ"',         ',',
-            '"KHU BẢO TÀNG"',               ',',
-            '"VĂN PHÒNG BỎ HOANG"',         ',',
+            '"VIỆN BẢO TÀNG"',              ',',
+            '"KHU VĂN PHÒNG BỎ HOANG"',     ',',
             '"PHÒNG THÍ NGHIỆM"',           ',',
-            '"LÕI NHÂN TẠO"',               ',',
-            '"KHU MỤC NÁT"',                ',',
-            '"NỀN MÓNG CỦA MỘT VỊ THẦN"',   ',',
+            '"LÕI PHẢN ỨNG"',               ',',
+            '"TÀN TÍCH BỎ HOANG"',          ',',
+            '"VÒM TRỜI THẦN LINH"',         ',',
             ']'
         ],
         // ----- DỊCH BỞI NKS -----

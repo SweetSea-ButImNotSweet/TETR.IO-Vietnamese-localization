@@ -222,6 +222,12 @@
     (function modifyHTML() {
         let observer = new MutationObserver(() => {
             if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
+                // Kiểm tra thử xem HTML thực sự load xong chưa, nếu chưa xong thì chờ khoảng 100ms rồi thử lại
+                // P/s: sử dụng readystatechange event
+                while (document.readyState !== "complete") {
+                    delayForMs(100);
+                }
+
                 let modifiedHTML = translateFile("index.html", document.documentElement.innerHTML);
                 document.documentElement.innerHTML = modifiedHTML;
                 observer.disconnect();
