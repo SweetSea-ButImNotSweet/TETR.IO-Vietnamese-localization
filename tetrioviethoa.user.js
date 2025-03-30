@@ -5,8 +5,8 @@
 // @description  TETR.IO Việt Hóa
 // @author       SweetSea
 // @match        https://tetr.io
-// @downloadURL  https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/main.user.js
-// @updateURL    https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/main.user.js
+// @downloadURL  https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/tetrioviethoa.user.js
+// @updateURL    https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/tetrioviethoa.user.js
 // @run-at       document-start
 // @grant        GM_addStyle
 // @grant        GM_getValue
