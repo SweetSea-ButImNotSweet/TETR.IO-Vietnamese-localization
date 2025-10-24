@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  TETR.IO Việt Hóa
 // @author       SweetSea
-// @match        https://tetr.io
+// @match        https://tetr.io/*
 // @downloadURL  https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/tetrioviethoa.user.js
 // @updateURL    https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/tetrioviethoa.user.js
 // @run-at       document-start
@@ -91,8 +91,8 @@
                             console.log("TETR.IO Việt hóa - Đã lấy từ điển mới và sắp xếp lại:", sortedData);
 
                             STORAGE_replacements = sortedData
-                            GM_setValue("localization")
-                            GM_setValue("lastUpdate")
+                            GM_setValue("localization", sortedData)
+                            GM_setValue("lastUpdate", Date.now())
                         } catch (e) {
                             console.error("TETR.IO Việt hóa - Có gì đó sai sai với cái file JSON rồi", e, response.responseText);
                             throw new Error();
@@ -120,7 +120,7 @@
         ) {
             fetchLocalization()
         }
-        checkLocalizationUpdate = true
+        checkedLocalizationUpdate = true
     }
 
     // Ghi đè XHLHttpRequest để thêm cơ chế khóa, để có thời gian kiểm tra, và cập nhật bản dịch mới
