@@ -36,7 +36,7 @@
     const BASE_URL = "https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main";
     const LOCALIZE_URL = `${BASE_URL}/data/localization.json5`;
 
-    const FLIES_NEED_TO_MODIFY_FROM_LOCALIZATION_DATABASE = ["js/tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
+    const FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_DATABASE = ["js/tetrio.js"]; // Những file cần dịch, lưu ý theo mặc định: `index.html` sẽ luôn được dịch
 
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // Nên cập nhật lại file sau mỗi 24h
     const FORCE_UPDATE_IMMEDIATELY = true; // Cập nhật ngay tức thì, dùng để kiểm tra bản dịch
@@ -46,81 +46,72 @@
     let STORAGE_replacements = GM_getValue("localization", {});
     let STORAGE_lastUpdate = GM_getValue("lastUpdate", 0);
 
-    // let safeToLocalizeString = false; // Nếu biến này là `false`, thì khả năng cao là Clouldflare đang hiện trang "Checking your browser before accessing tetr.io."
+    let safeToLocalizeString = false; // Nếu biến này là `false`, thì khả năng cao là Clouldflare đang hiện trang "Checking your browser before accessing tetr.io."
     // Hai hàm dưới đây tự động chạy luôn, một cái là sửa `index.html`, còn lại là sửa các file khác theo FILE_TO_MODIFY
     function modifyHTML() {
         let observer = new MutationObserver(() => {
             if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
                 let modifiedHTML = translateFile("index.html", document.documentElement.innerHTML);
                 document.documentElement.innerHTML = modifiedHTML;
-                observer.disconnect();
-                // safeToLocalizeString = true;
+                safeToLocalizeString = true;
             }
+            observer.disconnect();
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
     };
 
     let checkedLocalizationUpdate = false
-    function fetchLocalization() {
-        if (checkedLocalizationUpdate) return;
-
-        // Dùng để sắp xếp lại dữ liệu từ điển trước khi đem ra dùng
-        function sortTranslationData(data) {
-            for (let [file, translation] of Object.entries(data)) {
-                data[file] = Object.fromEntries(
-                    Object.entries(translation).sort(([eng1,], [eng2,]) => {
-                        // Sắp xếp cái từ điển theo độ dài của câu gốc trong tiếng Anh
-                        // Để tránh trường hợp từ dài bị ghi đè bởi từ ngắn
-                        return eng2.length - eng1.length;
-                    })
-                )
-            };
-        }
-
-        checkedLocalizationUpdate = true;
-        return new Promise(
-            (resolve) => {
-                // Lấy bản dịch + xử lí data trước
-                GM_xmlhttpRequest({
-                    method: "GET",
-                    url: LOCALIZE_URL,
-                    onload: (response) => {
-                        try {
-                            let sortedData = JSON5.parse(response.responseText);
-                            sortTranslationData(sortedData);
-                            console.log("TETR.IO Việt hóa - Đã lấy từ điển mới và sắp xếp lại:", sortedData);
-
-                            STORAGE_replacements = sortedData
-                            GM_setValue("localization", sortedData)
-                            GM_setValue("lastUpdate", Date.now())
-                        } catch (e) {
-                            console.error("TETR.IO Việt hóa - Có gì đó sai sai với cái file JSON rồi", e, response.responseText);
-                            throw new Error();
-                        }
-
-                        if (SHOW_LOCALIZATION_STORAGE) {
-                            console.log("TETR.IO Việt hóa - Bộ nhớ:", GM_getValue("localization", "[TRỐNG]"))
-                        };
-                    }
-                })
-
-                // Nếu data xong rồi, thì cho dịch HTML trước
-                modifyHTML();
-                resolve()
-
-            }
-        )
-
-    }
-
     function checkLocalizationUpdate() {
         if (
             FORCE_UPDATE_IMMEDIATELY
             || Date.now() - STORAGE_lastUpdate > UPDATE_INTERVAL
         ) {
-            fetchLocalization()
+            return new Promise(
+                (resolve) => {
+                    // Lấy bản dịch + xử lí data trước
+                    GM_xmlhttpRequest({
+                        method: "GET",
+                        url: LOCALIZE_URL,
+                        onload: (response) => {
+                            try {
+                                let sortedData = JSON5.parse(response.responseText);
+                                sortTranslationData(sortedData);
+                                console.log("TETR.IO Việt hóa - Đã lấy từ điển mới và sắp xếp lại:", sortedData);
+
+                                STORAGE_replacements = sortedData
+                                GM_setValue("localization", sortedData)
+                                GM_setValue("lastUpdate", Date.now())
+                            } catch (e) {
+                                console.error("TETR.IO Việt hóa - Có gì đó sai sai với cái file JSON rồi", e, response.responseText);
+                                throw new Error();
+                            }
+
+                            if (SHOW_LOCALIZATION_STORAGE) {
+                                console.log("TETR.IO Việt hóa - Bộ nhớ:", GM_getValue("localization", "[TRỐNG]"))
+                            };
+                        }
+                    })
+
+                    // Nếu data xong rồi, thì cho dịch HTML trước
+                    modifyHTML();
+                    resolve()
+                }
+            )
         }
         checkedLocalizationUpdate = true
+    }
+
+    // Dùng để sắp xếp lại dữ liệu từ điển trước khi đem ra dùng
+    function sortTranslationData(data) {
+        for (let [file, translation] of Object.entries(data)) {
+            data[file] = Object.fromEntries(
+                Object.entries(translation).sort(([eng1,], [eng2,]) => {
+                    // Sắp xếp cái từ điển theo độ dài của câu gốc trong tiếng Anh
+                    // Để tránh trường hợp từ dài bị ghi đè bởi từ ngắn
+                    return eng2.length - eng1.length;
+                })
+            )
+        };
     }
 
     // Ghi đè XHLHttpRequest để thêm cơ chế khóa, để có thời gian kiểm tra, và cập nhật bản dịch mới
@@ -134,8 +125,9 @@
             - Cuối cùng, `send` mới là hàm quyết định tải dữ liệu về, và hàm này luôn gọi cuối cùng sau khi configure xong,
                 nên tui mới quyết định override `send` để override luôn `onLoad`
         */
-        let realSend = unsafeWindow.XMLHttpRequest.prototype.send
-        let realOpen = unsafeWindow.XMLHttpRequest.prototype.open
+        const XHR = unsafeWindow.XMLHttpRequest;
+        let realSend = XHR.prototype.send;
+        let realOpen = XHR.prototype.open;
 
         unsafeWindow.XMLHttpRequest.prototype.send = function (...args) {
             const realOnLoadFunction = this.onload;
@@ -144,8 +136,8 @@
                     const [hostDomain, fileParameter] = extractDomainAndPath(this.responseURL);
                     console.log("TETR.IO Việt hóa - TETR.IO đang tải từ:", this.responseURL);
                     if (hostDomain == "tetr.io" && this.status === 200) {
-                        if (FLIES_NEED_TO_MODIFY_FROM_LOCALIZATION_DATABASE.includes(fileParameter)) {
-                            if (!checkedLocalizationUpdate) fetchLocalization();
+                        if (FILES_NEED_TO_MODIFY_FROM_LOCALIZATION_DATABASE.includes(fileParameter)) {
+                            if (!checkedLocalizationUpdate) checkLocalizationUpdate();
 
                             let temp = translateFile(fileParameter, this.responseText);
                             // Little hack: phải bật lại quyền writable thì mới có thể thay content :')
@@ -172,6 +164,8 @@
         // if (FORCE_UPDATE_IMMEDIATELY || (filename && STORAGE_replacements[filename] && previousFileData !== theirdata)) {
         // }
 
+        if (!theirdata || typeof theirdata !== "string") return theirdata;
+
         if (STORAGE_replacements[filename]) {
             for (const [from, to] of Object.entries(STORAGE_replacements[filename])) {
                 theirdata = theirdata.replaceAll(from, encodeText(to));
@@ -186,10 +180,6 @@
             //     });
         }
         return theirdata;
-    }
-
-    if (checkLocalizationUpdate()) {
-        fetchLocalization();
     }
 
     const CUSTOM_ENCODING = [
@@ -248,14 +238,19 @@
     //         if (safeToLocalizeString && FILES_TO_MODIFY.some(file => args[0].includes(file))) {
     //             let response = await originalFetch(...args);
     //             let fileName = FILES_TO_MODIFY.find(file => args[0].includes(file));
-    //             let text = translateFile(fileName, await response.text());
+    //             let clone = response.clone();
+    //             let text = translateFile(fileName, await clone.text());
+    // 
+    //             const headers = new Headers(response.headers);
+    //             headers.delete("content-encoding");
+    //             headers.delete("content-length");
     //             return new Response(text, { status: response.status, statusText: response.statusText, headers: response.headers });
     //         }
     //         return originalFetch(...args);
     //     };
     // })();
 
-    unsafeWindow.TETRIOVIETHOA = {
+    const TETRIOVIETHOA = {
         clearAllData: function () {
             // Dùng GM_listValue kiểm tra toàn bộ dữ liệu đã lưu, sau đó loop qua từng phần tử để xóa
             let allKeys = GM_listValues();
@@ -264,7 +259,7 @@
             }
         },
         forceUpdate: function () {
-            fetchLocalization();
+            checkLocalizationUpdate();
         },
         getConvertedText: function (text) {
             return encodeText(text);
@@ -274,5 +269,5 @@
         },
         XMLHttpRequest: unsafeWindow.XMLHttpRequest,
     };
-    translationIsReady = true;
+    unsafeWindow.TVH = unsafeWindow.TETRIOVIETHOA = TETRIOVIETHOA;
 })();
