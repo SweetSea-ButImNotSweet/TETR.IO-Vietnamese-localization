@@ -41,7 +41,6 @@
         // TODO: tetrio.js line 74040; index.html around line 2000
 
         // 9 tầng trong tháp Zenith
-        // ----- DỊCH BỞI NKS -----
         '["","hall of beginnings","the hotel","the casino","the arena","the museum","abandoned offices","the laboratory","the core","corruption","platform of the gods"]':[
             '[',
             '\"\"',                         ',',
@@ -53,8 +52,8 @@
             '"khu văn phòng bỏ hoang"',     ',',
             '"phòng thí nghiệm"',           ',',
             '"lõi phản ứng"',               ',',
-            '"tàn tích bỏ hoang"',          ',',
-            '"vòm trời thần linh"',         ',',
+            '"sự sa ngã"',                  ',',
+            '"điện đài của các vị thần"',   ',',
             ']'
         ],
         '["","HALL OF BEGINNINGS","THE HOTEL","THE CASINO","THE ARENA","THE MUSEUM","ABANDONED OFFICES","THE LABORATORY","THE CORE","CORRUPTION","PLATFORM OF THE GODS"]':[
@@ -68,11 +67,11 @@
             '"KHU VĂN PHÒNG BỎ HOANG"',     ',',
             '"PHÒNG THÍ NGHIỆM"',           ',',
             '"LÕI PHẢN ỨNG"',               ',',
-            '"TÀN TÍCH BỎ HOANG"',          ',',
-            '"VÒM TRỜI THẦN LINH"',         ',',
+            '"SỰ SA NGÃ"',                  ',',
+            '"ĐIỆN ĐÀI CỦA CÁC VỊ THẦN"',   ',',
             ']'
         ],
-        // ----- DỊCH BỞI NKS -----
+        // -----/ DỊCH BỞI NKS, LIGHTNINGREED /-----
 
         // DO NOT CHANGE
         "res/font/hun.fnt": ["https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/font/new_hun.fnt"],
