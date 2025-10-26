@@ -140,7 +140,7 @@
             return new Promise(
                 (resolve, reject) => {
                     // Lấy bản dịch + xử lí data trước
-                    GM_xmlhttprequest({
+                    GM_xmlhttpRequest({
                             method: "GET",
                             url: LOCALIZE_URL,
                             onload: (response) => {
