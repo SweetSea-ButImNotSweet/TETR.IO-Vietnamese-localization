@@ -71,15 +71,6 @@
     const XHRrealSend = XHR.prototype.send;
     const XHRrealOpen = XHR.prototype.open;
 
-    function newXML(args) {
-        let a = new XMLHttpRequest;
-
-        a.method = args.method;
-        a.url = args.url;
-        a.onload = args.onload;
-
-        return a
-    };
 
 
 
@@ -149,8 +140,7 @@
             return new Promise(
                 (resolve, reject) => {
                     // Lấy bản dịch + xử lí data trước
-                    XHRrealOpen(
-                        newXML({
+                    GM_xmlhttprequest({
                             method: "GET",
                             url: LOCALIZE_URL,
                             onload: (response) => {
@@ -174,7 +164,6 @@
                                 };
                             }
                         })
-                    )
                     checkedLocalizationUpdate = true
                     resolve()
                 }
