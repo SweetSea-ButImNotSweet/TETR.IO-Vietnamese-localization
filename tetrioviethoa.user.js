@@ -16,7 +16,6 @@
 // @grant        GM_listValues
 // @grant        GM_xmlhttpRequest
 
-// @connect      https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/*
 // @require      https://raw.githubusercontent.com/SweetSea-ButImNotSweet/TETR.IO-Vietnamese-localization/refs/heads/main/lib/json5.js
 // ==/UserScript==
 
