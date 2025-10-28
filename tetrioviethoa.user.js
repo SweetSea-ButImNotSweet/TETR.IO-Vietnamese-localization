@@ -116,19 +116,23 @@
     })();
 
 
-    let safeToLocalizeString = false; // Nếu biến này là `false`, thì khả năng cao là Clouldflare đang hiện trang "Checking your browser before accessing tetr.io."
+    // let safeToLocalizeString = false; // Nếu biến này là `false`, thì khả năng cao là CloudFlare đang hiện trang "Checking your browser before accessing tetr.io."
     // Hai hàm dưới đây tự động chạy luôn, một cái là sửa `index.html`, còn lại là sửa các file khác theo FILE_TO_MODIFY
     function modifyHTML() {
         let observer = new MutationObserver(() => {
-            if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
-                let modifiedHTML = translateFile("index.html", document.documentElement.innerHTML);
-                document.documentElement.innerHTML = modifiedHTML;
-                safeToLocalizeString = true;
+            if (document.readyState === "complete") {
+                observer.disconnect();
+                unsafeWindow.setTimeout(() => {
+                    if (document.documentElement.innerHTML.includes("welcome back to TETR.IO")) {
+                        let modifiedHTML = translateFile("index.html", document.documentElement.innerHTML);
+                        document.documentElement.innerHTML = modifiedHTML;
+                        // safeToLocalizeString = true;
+                    }
+                }, 3000);
             }
-            observer.disconnect();
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
-    };
+    }
 
     let checkedLocalizationUpdate = false
     function checkLocalizationUpdate() {
